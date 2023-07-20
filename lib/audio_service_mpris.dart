@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:audio_service_platform_interface/audio_service_platform_interface.dart';
@@ -89,9 +88,6 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> setState(SetStateRequest request) async {
-    // const encoder = JsonEncoder.withIndent("  ");
-    // debugPrint('setState(): ${encoder.convert(request.state.toMap())}');
-
     _mpris.position = request.state.updatePosition;
     _isPlaying = request.state.playing;
     _mpris.playbackState = _isPlaying ? 'Playing' : 'Paused';
