@@ -1,6 +1,6 @@
 # audio_service_mpris
 
-This platform interface allows you to use audio_service on Linux with Desktop Environment supporting Media Player Remote Interfacing Specification.
+This platform interface allows you to use [audio_service](https://pub.dev/packages/audio_service) on Linux with Desktop Environment supporting Media Player Remote Interfacing Specification.
 
 ![Example on Kde Plasma](images/kde-media-control.png "Example on Kde Plasma")
 
@@ -18,26 +18,24 @@ flutter pub add audio_service_mpris
 
 **Methods**
 
-| Name  | Supported |
-|-------|-----------|
-| Raise | ❌         |
-| Quit  | ❌         |
+| Name                                                         | Supported |
+| ------------------------------------------------------------ | --------- |
+| [Raise](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Raise) | ❌         |
+| [Quit](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Quit) | ❌         |
 
 **Properties**
 
-| Name                | Supported | Value                                                                   |
-|---------------------|-----------|-------------------------------------------------------------------------|
-| CanQuit             | ✅         | false                                                                   |
-| Fullscreen          | ✅         | false                                                                   |
-| CanSetFullscreen    | ✅         | false                                                                   |
-| CanRaise            | ✅         | false                                                                   |
-| HasTrackList        | ✅         | false                                                                   |
-| Identity            | ✅         | androidNotificationChannelName taken from audio_service platform config |
-| DesktopEntry        | ✅         | Empty string                                                            |
-| SupportedUriSchemes | ✅         | `[]`                                                                    |
-| SupportedMimeTypes  | ✅         | `[]`                                                                    |
-
-
+| Name                                                         | Supported | Value                                                        |
+| ------------------------------------------------------------ | --------- | ------------------------------------------------------------ |
+| [CanQuit](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanQuit) | ✅         | false                                                        |
+| [Fullscreen](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:Fullscreen) | ✅         | false                                                        |
+| [CanSetFullscreen](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanSetFullscreen) | ✅         | false                                                        |
+| [CanRaise](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanRaise) | ✅         | false                                                        |
+| [HasTrackList](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:HasTrackList) | ✅         | false                                                        |
+| [Identity](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:Identity) | ✅         | androidNotificationChannelName taken from audio_service platform config |
+| [DesktopEntry](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:DesktopEntry) | ✅         | Empty string                                                 |
+| [SupportedUriSchemes](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:SupportedUriSchemes) | ✅         | `[]`                                                         |
+| [SupportedMimeTypes](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:SupportedMimeTypes) | ✅         | `[]`                                                         |
 
 ### org.mpris.MediaPlayer2.Player
 
