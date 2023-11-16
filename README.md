@@ -18,24 +18,24 @@ flutter pub add audio_service_mpris
 
 **Methods**
 
-| Name                                                         | Supported |
-| ------------------------------------------------------------ | --------- |
+| Name                                                                                          | Supported |
+|-----------------------------------------------------------------------------------------------|-----------|
 | [Raise](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Raise) | ❌         |
-| [Quit](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Quit) | ❌         |
+| [Quit](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Quit)   | ❌         |
 
 **Properties**
 
-| Name                                                         | Supported | Value                                                        |
-| ------------------------------------------------------------ | --------- | ------------------------------------------------------------ |
-| [CanQuit](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanQuit) | ✅         | false                                                        |
-| [Fullscreen](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:Fullscreen) | ✅         | false                                                        |
-| [CanSetFullscreen](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanSetFullscreen) | ✅         | false                                                        |
-| [CanRaise](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanRaise) | ✅         | false                                                        |
-| [HasTrackList](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:HasTrackList) | ✅         | false                                                        |
-| [Identity](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:Identity) | ✅         | androidNotificationChannelName taken from audio_service platform config |
-| [DesktopEntry](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:DesktopEntry) | ✅         | Empty string                                                 |
-| [SupportedUriSchemes](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:SupportedUriSchemes) | ✅         | `[]`                                                         |
-| [SupportedMimeTypes](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:SupportedMimeTypes) | ✅         | `[]`                                                         |
+| Name                                                                                                                        | Supported | Value                                                                   |
+|-----------------------------------------------------------------------------------------------------------------------------|-----------|-------------------------------------------------------------------------|
+| [CanQuit](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanQuit)                         | ✅         | false                                                                   |
+| [Fullscreen](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:Fullscreen)                   | ✅         | false                                                                   |
+| [CanSetFullscreen](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanSetFullscreen)       | ✅         | false                                                                   |
+| [CanRaise](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:CanRaise)                       | ✅         | false                                                                   |
+| [HasTrackList](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:HasTrackList)               | ✅         | false                                                                   |
+| [Identity](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:Identity)                       | ✅         | androidNotificationChannelName taken from audio_service platform config |
+| [DesktopEntry](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:DesktopEntry)               | ✅         | Empty string                                                            |
+| [SupportedUriSchemes](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:SupportedUriSchemes) | ✅         | `[]`                                                                    |
+| [SupportedMimeTypes](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Property:SupportedMimeTypes)   | ✅         | `[]`                                                                    |
 
 ### org.mpris.MediaPlayer2.Player
 

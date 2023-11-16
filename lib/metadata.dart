@@ -2,19 +2,18 @@ import 'package:dbus/dbus.dart';
 
 /// https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
 class Metadata {
-  Metadata({
-    required this.trackId,
-    required this.title,
-    this.length,
-    this.artist,
-    this.lyrics,
-    this.artUrl,
-    this.album,
-    this.albumArtist,
-    this.discNumber,
-    this.trackNumber,
-    this.genre
-  });
+  Metadata(
+      {required this.trackId,
+      required this.title,
+      this.length,
+      this.artist,
+      this.lyrics,
+      this.artUrl,
+      this.album,
+      this.albumArtist,
+      this.discNumber,
+      this.trackNumber,
+      this.genre});
 
   /// mpris:trackid
   ///
@@ -67,7 +66,7 @@ class Metadata {
   final int? trackNumber;
 
   /// xesam:genre
-  /// 
+  ///
   /// List of Strings: The genre(s) of the track.
   final List<String>? genre;
 
@@ -108,8 +107,7 @@ class Metadata {
     final result = DBusDict.stringVariant({
       "mpris:trackid": DBusObjectPath(trackId),
       "xesam:title": DBusString(title),
-      if (length != null)
-        "mpris:length": DBusInt64(length!.inMicroseconds),
+      if (length != null) "mpris:length": DBusInt64(length!.inMicroseconds),
       if (artist != null) "xesam:artist": DBusArray.string(artist!),
       if (lyrics != null) "xesam:asText": DBusString(lyrics!),
       if (artUrl != null) "mpris:artUrl": DBusString(artUrl!),
@@ -123,19 +121,18 @@ class Metadata {
     return result;
   }
 
-  Metadata copyWith({
-    String? trackId,
-    String? title,
-    Duration? length,
-    List<String>? artist,
-    String? lyrics,
-    String? artUrl,
-    String? album,
-    List<String>? albumArtist,
-    int? discNumber,
-    int? trackNumber,
-    List<String>? genre
-  }) {
+  Metadata copyWith(
+      {String? trackId,
+      String? title,
+      Duration? length,
+      List<String>? artist,
+      String? lyrics,
+      String? artUrl,
+      String? album,
+      List<String>? albumArtist,
+      int? discNumber,
+      int? trackNumber,
+      List<String>? genre}) {
     return Metadata(
       trackId: trackId ?? this.trackId,
       title: title ?? this.title,

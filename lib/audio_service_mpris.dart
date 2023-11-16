@@ -15,7 +15,7 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   void _listenToOpenUriStream() {
     _mpris.openUriStream.listen((uri) {
-      if(_handlerCallbacks == null) return;
+      if (_handlerCallbacks == null) return;
 
       _handlerCallbacks!.playFromUri(PlayFromUriRequest(uri: uri));
     });
@@ -23,7 +23,7 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   void _listenToSeekStream() {
     _mpris.positionStream.listen((position) {
-      if(_handlerCallbacks == null) return;
+      if (_handlerCallbacks == null) return;
 
       _handlerCallbacks!.seek(SeekRequest(position: position));
     });
@@ -32,30 +32,31 @@ class AudioServiceMpris extends AudioServicePlatform {
   void _listenToControlStream() {
     _mpris.controlStream.listen((event) {
       debugPrint('Requested from DBus: $event');
-      if(_handlerCallbacks == null) return;
+      if (_handlerCallbacks == null) return;
 
-      switch(event) {
-        case 'play': _handlerCallbacks!.play(const PlayRequest());
-        case 'pause': _handlerCallbacks!.pause(const PauseRequest());
-        case 'next': _handlerCallbacks!.skipToNext(const SkipToNextRequest());
-        case 'previous': _handlerCallbacks!.skipToPrevious(const SkipToPreviousRequest());
-        case 'playPause': _isPlaying
-            ? _handlerCallbacks!.pause(const PauseRequest())
-            : _handlerCallbacks!.play(const PlayRequest());
+      switch (event) {
+        case 'play':
+          _handlerCallbacks!.play(const PlayRequest());
+        case 'pause':
+          _handlerCallbacks!.pause(const PauseRequest());
+        case 'next':
+          _handlerCallbacks!.skipToNext(const SkipToNextRequest());
+        case 'previous':
+          _handlerCallbacks!.skipToPrevious(const SkipToPreviousRequest());
+        case 'playPause':
+          _isPlaying
+              ? _handlerCallbacks!.pause(const PauseRequest())
+              : _handlerCallbacks!.play(const PlayRequest());
       }
     });
   }
 
   void _listenToVolumeStream() {
     _mpris.volumeStream.listen((value) {
-      if(_handlerCallbacks == null) return;
+      if (_handlerCallbacks == null) return;
 
       _handlerCallbacks!.customAction(
-          CustomActionRequest(
-            name: 'dbusVolume',
-            extras: {'value': value}
-          )
-      );
+          CustomActionRequest(name: 'dbusVolume', extras: {'value': value}));
     });
   }
 
@@ -69,9 +70,8 @@ class AudioServiceMpris extends AudioServicePlatform {
 
     _dBusClient = DBusClient.session();
     _mpris = OrgMprisMediaPlayer2(
-      path: DBusObjectPath('/org/mpris/MediaPlayer2'),
-      identity: request.config.androidNotificationChannelName
-    );
+        path: DBusObjectPath('/org/mpris/MediaPlayer2'),
+        identity: request.config.androidNotificationChannelName);
 
     _listenToControlStream();
     _listenToSeekStream();
@@ -80,9 +80,8 @@ class AudioServiceMpris extends AudioServicePlatform {
 
     await _dBusClient.registerObject(_mpris);
     await _dBusClient.requestName(
-      'org.mpris.MediaPlayer2.${request.config.androidNotificationChannelId}.instance$pid',
-      flags: {DBusRequestNameFlag.doNotQueue}
-    );
+        'org.mpris.MediaPlayer2.${request.config.androidNotificationChannelId}.instance$pid',
+        flags: {DBusRequestNameFlag.doNotQueue});
   }
 
   @override
@@ -100,20 +99,19 @@ class AudioServiceMpris extends AudioServicePlatform {
   @override
   Future<void> setMediaItem(SetMediaItemRequest request) async {
     List<String>? artist;
-    if(request.mediaItem.artist != null) artist = [request.mediaItem.artist!];
+    if (request.mediaItem.artist != null) artist = [request.mediaItem.artist!];
 
     List<String>? genre;
-    if(request.mediaItem.genre != null) genre = [request.mediaItem.genre!];
+    if (request.mediaItem.genre != null) genre = [request.mediaItem.genre!];
 
     _mpris.metadata = Metadata(
-      trackId: '/trackId/${request.mediaItem.id}',
-      title: request.mediaItem.title,
-      length: request.mediaItem.duration,
-      artist: artist,
-      artUrl: request.mediaItem.artUri.toString(),
-      album: request.mediaItem.album,
-      genre: genre
-    );
+        trackId: '/trackId/${request.mediaItem.id}',
+        title: request.mediaItem.title,
+        length: request.mediaItem.duration,
+        artist: artist,
+        artUrl: request.mediaItem.artUri.toString(),
+        album: request.mediaItem.album,
+        genre: genre);
   }
 
   @override
@@ -124,7 +122,8 @@ class AudioServiceMpris extends AudioServicePlatform {
   @override
   Future<void> notifyChildrenChanged(
       NotifyChildrenChangedRequest request) async {
-    throw UnimplementedError('notifyChildrenChanged() has not been implemented.');
+    throw UnimplementedError(
+        'notifyChildrenChanged() has not been implemented.');
   }
 
   @override

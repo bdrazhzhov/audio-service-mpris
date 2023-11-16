@@ -25,10 +25,10 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   var position = const Duration(seconds: 0);
 
   /// Creates a new object to expose on [path].
-  OrgMprisMediaPlayer2({
-    DBusObjectPath path = const DBusObjectPath.unchecked('/'),
-    required this.identity
-  }) : super(path);
+  OrgMprisMediaPlayer2(
+      {DBusObjectPath path = const DBusObjectPath.unchecked('/'),
+      required this.identity})
+      : super(path);
 
   /// Gets value of property org.mpris.MediaPlayer2.CanQuit
   Future<DBusMethodResponse> getCanQuit() async {
@@ -94,7 +94,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   String get playbackState => _playbackState;
 
   set playbackState(String state) {
-    if(state == _playbackState) return;
+    if (state == _playbackState) return;
 
     emitPropertiesChanged(
       "org.mpris.MediaPlayer2.Player",
@@ -164,7 +164,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   /// Gets value of property org.mpris.MediaPlayer2.Player.Position
   Future<DBusMethodResponse> getPosition() async {
     debugPrint('GetPosition(): $position');
-    return DBusMethodSuccessResponse([DBusVariant(DBusInt64(position.inMicroseconds))]);
+    return DBusMethodSuccessResponse(
+        [DBusVariant(DBusInt64(position.inMicroseconds))]);
   }
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.MinimumRate
@@ -573,12 +574,12 @@ class OrgMprisMediaPlayer2 extends DBusObject {
       properties['Identity'] = (await getIdentity()).returnValues[0];
       // properties['DesktopEntry'] = (await getDesktopEntry()).returnValues[0];
       properties['SupportedUriSchemes'] =
-      (await getSupportedUriSchemes()).returnValues[0];
+          (await getSupportedUriSchemes()).returnValues[0];
       properties['SupportedMimeTypes'] =
-      (await getSupportedMimeTypes()).returnValues[0];
+          (await getSupportedMimeTypes()).returnValues[0];
     } else if (interface == 'org.mpris.MediaPlayer2.Player') {
       properties['PlaybackStatus'] =
-      (await _getPlaybackStatus()).returnValues[0];
+          (await _getPlaybackStatus()).returnValues[0];
       properties['LoopStatus'] = (await getLoopStatus()).returnValues[0];
       properties['Rate'] = (await getRate()).returnValues[0];
       properties['Metadata'] = (await getMetadata()).returnValues[0];
