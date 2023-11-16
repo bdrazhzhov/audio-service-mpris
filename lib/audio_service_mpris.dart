@@ -16,7 +16,7 @@ class AudioServiceMpris extends AudioServicePlatform {
   void _listenToOpenUriStream() {
     _mpris.openUriStream.listen((uri) {
       if(_handlerCallbacks == null) return;
-    
+
       _handlerCallbacks!.playFromUri(PlayFromUriRequest(uri: uri));
     });
   }
@@ -24,7 +24,7 @@ class AudioServiceMpris extends AudioServicePlatform {
   void _listenToSeekStream() {
     _mpris.positionStream.listen((position) {
       if(_handlerCallbacks == null) return;
-      
+
       _handlerCallbacks!.seek(SeekRequest(position: position));
     });
   }
@@ -33,7 +33,7 @@ class AudioServiceMpris extends AudioServicePlatform {
     _mpris.controlStream.listen((event) {
       debugPrint('Requested from DBus: $event');
       if(_handlerCallbacks == null) return;
-    
+
       switch(event) {
         case 'play': _handlerCallbacks!.play(const PlayRequest());
         case 'pause': _handlerCallbacks!.pause(const PauseRequest());
@@ -80,10 +80,9 @@ class AudioServiceMpris extends AudioServicePlatform {
 
     await _dBusClient.registerObject(_mpris);
     await _dBusClient.requestName(
-      'org.mpris.MediaPlayer2.${request.config.androidNotificationChannelName}.instance$pid',
+      'org.mpris.MediaPlayer2.${request.config.androidNotificationChannelId}.instance$pid',
       flags: {DBusRequestNameFlag.doNotQueue}
     );
-    // no-op
   }
 
   @override
