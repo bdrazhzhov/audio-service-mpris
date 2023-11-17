@@ -3,8 +3,7 @@ import 'package:dbus/dbus.dart';
 /// https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
 class Metadata {
   Metadata(
-      {required this.trackId,
-      required this.title,
+      {required this.title,
       this.length,
       this.artist,
       this.lyrics,
@@ -18,7 +17,7 @@ class Metadata {
   /// mpris:trackid
   ///
   /// D-Bus path: A unique identity for this track within the context of an MPRIS object (eg: tracklist).
-  final String trackId;
+  // final String trackId;
 
   /// xesam:title
   ///
@@ -105,7 +104,6 @@ class Metadata {
 
   DBusValue toValue() {
     final result = DBusDict.stringVariant({
-      "mpris:trackid": DBusObjectPath(trackId),
       "xesam:title": DBusString(title),
       if (length != null) "mpris:length": DBusInt64(length!.inMicroseconds),
       if (artist != null) "xesam:artist": DBusArray.string(artist!),
@@ -122,8 +120,7 @@ class Metadata {
   }
 
   Metadata copyWith(
-      {String? trackId,
-      String? title,
+      {String? title,
       Duration? length,
       List<String>? artist,
       String? lyrics,
@@ -134,7 +131,6 @@ class Metadata {
       int? trackNumber,
       List<String>? genre}) {
     return Metadata(
-      trackId: trackId ?? this.trackId,
       title: title ?? this.title,
       length: length ?? this.length,
       artist: artist ?? this.artist,

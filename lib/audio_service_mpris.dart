@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:audio_service_platform_interface/audio_service_platform_interface.dart';
 import 'package:dbus/dbus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:uuid/uuid.dart';
 
 import 'mpris.dart';
 import 'metadata.dart';
@@ -13,7 +12,6 @@ class AudioServiceMpris extends AudioServicePlatform {
   late final OrgMprisMediaPlayer2 _mpris;
   AudioHandlerCallbacks? _handlerCallbacks;
   bool _isPlaying = false;
-  final _trackIds = <String, String>{};
 
   void _listenToOpenUriStream() {
     _mpris.openUriStream.listen((uri) {
@@ -106,29 +104,13 @@ class AudioServiceMpris extends AudioServicePlatform {
     List<String>? genre;
     if (request.mediaItem.genre != null) genre = [request.mediaItem.genre!];
 
-    String trackId = _getTrackId(request.mediaItem.id);
-
     _mpris.metadata = Metadata(
-        trackId: '/trackId/$trackId',
         title: request.mediaItem.title,
         length: request.mediaItem.duration,
         artist: artist,
         artUrl: request.mediaItem.artUri.toString(),
         album: request.mediaItem.album,
         genre: genre);
-  }
-
-  String _getTrackId(String mediaItemId) {
-    final String trackId;
-    
-    if(_trackIds.containsKey(mediaItemId)) {
-      trackId = _trackIds[mediaItemId]!;
-    } else {
-      trackId = const Uuid().v4().replaceAll('-', '_');
-      _trackIds[mediaItemId] = trackId;
-    }
-
-    return trackId;
   }
 
   @override

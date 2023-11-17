@@ -131,7 +131,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   }
 
   Metadata _metadata = Metadata(
-    trackId: "/org/mpris/MediaPlayer2/TrackList/NoTrack",
+    // trackId: "/org/mpris/MediaPlayer2/TrackList/NoTrack",
     title: "No title",
   );
   Metadata get metadata => _metadata;
