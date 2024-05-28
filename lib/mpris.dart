@@ -115,7 +115,10 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Sets property org.mpris.MediaPlayer2.Player.LoopStatus
   Future<DBusMethodResponse> setLoopStatus(String value) async {
-    debugPrint('Set org.mpris.MediaPlayer2.Player.LoopStatus not implemented');
+    if (kDebugMode) {
+      debugPrint(
+          'Set org.mpris.MediaPlayer2.Player.LoopStatus not implemented');
+    }
     return DBusMethodSuccessResponse([]);
   }
 
@@ -126,7 +129,9 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Sets property org.mpris.MediaPlayer2.Player.Rate
   Future<DBusMethodResponse> setRate(double value) async {
-    debugPrint('Set org.mpris.MediaPlayer2.Player.Rate not implemented');
+    if (kDebugMode) {
+      debugPrint('Set org.mpris.MediaPlayer2.Player.Rate not implemented');
+    }
     return DBusMethodSuccessResponse([]);
   }
 
@@ -151,7 +156,9 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Volume
   Future<DBusMethodResponse> getVolume() async {
-    debugPrint('Get org.mpris.MediaPlayer2.Player.Volume not implemented');
+    if (kDebugMode) {
+      debugPrint('Get org.mpris.MediaPlayer2.Player.Volume not implemented');
+    }
     return DBusMethodSuccessResponse([const DBusDouble(1.0)]);
   }
 
@@ -163,7 +170,9 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Position
   Future<DBusMethodResponse> getPosition() async {
-    debugPrint('GetPosition(): $position');
+    if (kDebugMode) {
+      debugPrint('GetPosition(): $position');
+    }
     return DBusMethodSuccessResponse(
         [DBusVariant(DBusInt64(position.inMicroseconds))]);
   }
@@ -246,7 +255,9 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Seek()
   Future<DBusMethodResponse> doSeek(int offset) async {
-    debugPrint('org.mpris.MediaPlayer2.Player.Seek() not implemented');
+    if (kDebugMode) {
+      debugPrint('org.mpris.MediaPlayer2.Player.Seek() not implemented');
+    }
     return DBusMethodSuccessResponse([]);
   }
 
@@ -426,7 +437,9 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   @override
   Future<DBusMethodResponse> getProperty(String interface, String name) async {
-    debugPrint('Requested property $name from $interface');
+    if (kDebugMode) {
+      debugPrint('Requested property $name from $interface');
+    }
 
     if (interface == 'org.mpris.MediaPlayer2') {
       if (name == 'CanQuit') {

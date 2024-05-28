@@ -31,7 +31,9 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   void _listenToControlStream() {
     _mpris.controlStream.listen((event) {
-      debugPrint('Requested from DBus: $event');
+      if (kDebugMode) {
+        debugPrint('Requested from DBus: $event');
+      }
       if (_handlerCallbacks == null) return;
 
       switch (event) {
@@ -66,7 +68,9 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> configure(ConfigureRequest request) async {
-    debugPrint('Configure AudioServiceLinux.');
+    if (kDebugMode) {
+      debugPrint('Configure AudioServiceLinux.');
+    }
 
     _dBusClient = DBusClient.session();
     _mpris = OrgMprisMediaPlayer2(
@@ -93,7 +97,9 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> setQueue(SetQueueRequest request) async {
-    debugPrint('setQueue() has not been implemented.');
+    if (kDebugMode) {
+      debugPrint('setQueue() has not been implemented.');
+    }
   }
 
   @override
