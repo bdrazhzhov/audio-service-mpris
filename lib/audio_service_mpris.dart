@@ -84,7 +84,7 @@ class AudioServiceMpris extends AudioServicePlatform {
 
     await _dBusClient.registerObject(_mpris);
     await _dBusClient.requestName(
-        'org.mpris.MediaPlayer2.${request.config.androidNotificationChannelId}.instance$pid',
+        'org.mpris.MediaPlayer2.${request.config.androidNotificationChannelName}',
         flags: {DBusRequestNameFlag.doNotQueue});
   }
 
