@@ -1,3 +1,7 @@
+## 0.1.4
+
+Replaced logging function from `debugPrint()` to `log()`
+
 ## 0.1.3
 
 Removed `mpris:trackid` from metadata object. It's useless until org.mpris.MediaPlayer2.TrackList interface implementation

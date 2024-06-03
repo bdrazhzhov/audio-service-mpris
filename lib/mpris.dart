@@ -2,9 +2,9 @@
 // dart-dbus generate-object dbus-interfaces/org.mpris.xml
 
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:dbus/dbus.dart';
-import 'package:flutter/foundation.dart';
 
 import 'metadata.dart';
 
@@ -115,7 +115,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Sets property org.mpris.MediaPlayer2.Player.LoopStatus
   Future<DBusMethodResponse> setLoopStatus(String value) async {
-    debugPrint('Set org.mpris.MediaPlayer2.Player.LoopStatus not implemented');
+    log('Set org.mpris.MediaPlayer2.Player.LoopStatus not implemented',
+        name: 'audio_service_mpris');
     return DBusMethodSuccessResponse([]);
   }
 
@@ -126,7 +127,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Sets property org.mpris.MediaPlayer2.Player.Rate
   Future<DBusMethodResponse> setRate(double value) async {
-    debugPrint('Set org.mpris.MediaPlayer2.Player.Rate not implemented');
+    log('Set org.mpris.MediaPlayer2.Player.Rate not implemented',
+        name: 'audio_service_mpris');
     return DBusMethodSuccessResponse([]);
   }
 
@@ -151,7 +153,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Volume
   Future<DBusMethodResponse> getVolume() async {
-    debugPrint('Get org.mpris.MediaPlayer2.Player.Volume not implemented');
+    log('Get org.mpris.MediaPlayer2.Player.Volume not implemented',
+        name: 'audio_service_mpris');
     return DBusMethodSuccessResponse([const DBusDouble(1.0)]);
   }
 
@@ -163,7 +166,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Position
   Future<DBusMethodResponse> getPosition() async {
-    debugPrint('GetPosition(): $position');
+    log('GetPosition(): $position', name: 'audio_service_mpris');
     return DBusMethodSuccessResponse(
         [DBusVariant(DBusInt64(position.inMicroseconds))]);
   }
@@ -246,7 +249,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Seek()
   Future<DBusMethodResponse> doSeek(int offset) async {
-    debugPrint('org.mpris.MediaPlayer2.Player.Seek() not implemented');
+    log('org.mpris.MediaPlayer2.Player.Seek() not implemented',
+        name: 'audio_service_mpris');
     return DBusMethodSuccessResponse([]);
   }
 
@@ -426,7 +430,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   @override
   Future<DBusMethodResponse> getProperty(String interface, String name) async {
-    debugPrint('Requested property $name from $interface');
+    log('Requested property $name from $interface',
+        name: 'audio_service_mpris');
 
     if (interface == 'org.mpris.MediaPlayer2') {
       if (name == 'CanQuit') {

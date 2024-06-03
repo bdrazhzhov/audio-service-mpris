@@ -1,8 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:audio_service_platform_interface/audio_service_platform_interface.dart';
 import 'package:dbus/dbus.dart';
-import 'package:flutter/foundation.dart';
 
 import 'mpris.dart';
 import 'metadata.dart';
@@ -31,7 +31,7 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   void _listenToControlStream() {
     _mpris.controlStream.listen((event) {
-      debugPrint('Requested from DBus: $event');
+      log('Requested from DBus: $event', name: 'audio_service_mpris');
       if (_handlerCallbacks == null) return;
 
       switch (event) {
@@ -66,7 +66,7 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> configure(ConfigureRequest request) async {
-    debugPrint('Configure AudioServiceLinux.');
+    log('Configure AudioServiceLinux.', name: 'audio_service_mpris');
 
     _dBusClient = DBusClient.session();
     _mpris = OrgMprisMediaPlayer2(
@@ -93,7 +93,7 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> setQueue(SetQueueRequest request) async {
-    debugPrint('setQueue() has not been implemented.');
+    log('setQueue() has not been implemented.', name: 'audio_service_mpris');
   }
 
   @override
