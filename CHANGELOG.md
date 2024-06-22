@@ -1,3 +1,7 @@
+## 0.1.5
+
+Made the library closer to DBus specs
+
 ## 0.1.4
 
 Replaced logging function from `debugPrint()` to `log()`
