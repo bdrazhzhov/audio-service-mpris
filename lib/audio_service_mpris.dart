@@ -67,6 +67,8 @@ class AudioServiceMpris extends AudioServicePlatform {
   @override
   Future<void> configure(ConfigureRequest request) async {
     log('Configure AudioServiceLinux.', name: 'audio_service_mpris');
+    assert(request.config.androidNotificationChannelId != null,
+          "androidNotificationChannelId is required for registering DBus object. e.g com.ryanheise.myapp.channel.audio");
 
     _dBusClient = DBusClient.session();
     _mpris = OrgMprisMediaPlayer2(
