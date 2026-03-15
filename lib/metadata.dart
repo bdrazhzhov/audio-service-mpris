@@ -1,8 +1,8 @@
-import 'package:dbus/dbus.dart';
+part of 'audio_service_mpris.dart';
 
 /// https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
-class Metadata {
-  Metadata(
+class _Metadata {
+  _Metadata(
       {required this.title,
       this.length,
       this.artist,
@@ -110,8 +110,7 @@ class Metadata {
       if (lyrics != null) "xesam:asText": DBusString(lyrics!),
       if (artUrl != null) "mpris:artUrl": DBusString(artUrl!),
       if (album != null) "xesam:album": DBusString(album!),
-      if (albumArtist != null)
-        "xesam:albumArtist": DBusArray.string(albumArtist!),
+      if (albumArtist != null) "xesam:albumArtist": DBusArray.string(albumArtist!),
       if (discNumber != null) "xesam:discNumber": DBusInt64(discNumber!),
       if (trackNumber != null) "xesam:trackNumber": DBusInt64(trackNumber!),
       if (genre != null) "xesam:genre": DBusArray.string(genre!),
@@ -119,7 +118,7 @@ class Metadata {
     return result;
   }
 
-  Metadata copyWith(
+  _Metadata copyWith(
       {String? title,
       Duration? length,
       List<String>? artist,
@@ -130,7 +129,7 @@ class Metadata {
       int? discNumber,
       int? trackNumber,
       List<String>? genre}) {
-    return Metadata(
+    return _Metadata(
       title: title ?? this.title,
       length: length ?? this.length,
       artist: artist ?? this.artist,

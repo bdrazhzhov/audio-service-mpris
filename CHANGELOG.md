@@ -1,3 +1,9 @@
+## 1.0.0-beta.1
+
+- Initialization with default values
+- Change properties at runtime
+- Example application
+
 ## 0.2.1
 
 Updated README

@@ -1,6 +1,6 @@
 name: audio_service_mpris
 description: audio_service platform interface supporting Media Player Remote Interfacing Specification.
-version: 0.2.1
+version: 1.0.0-beta.1
 homepage: https://github.com/bdrazhzhov/audio-service-mpris
 
 environment:
@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  audio_service_platform_interface: ^0.1.0
-  dbus: ^0.7.10
+  audio_service_platform_interface: ^0.1.3
+  dbus: ^0.7.12
 
 dev_dependencies:
   flutter_test:
