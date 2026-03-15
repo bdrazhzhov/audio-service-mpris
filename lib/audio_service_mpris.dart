@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:audio_service_platform_interface/audio_service_platform_interface.dart';
 import 'package:dbus/dbus.dart';
 
-import 'mpris.dart';
 import 'metadata.dart';
+import 'mpris.dart';
 
 class AudioServiceMpris extends AudioServicePlatform {
   late final DBusClient _dBusClient;
@@ -55,8 +55,8 @@ class AudioServiceMpris extends AudioServicePlatform {
     _mpris.volumeStream.listen((value) {
       if (_handlerCallbacks == null) return;
 
-      _handlerCallbacks!.customAction(
-          CustomActionRequest(name: 'dbusVolume', extras: {'value': value}));
+      final req = CustomActionRequest(name: 'dbusVolume', extras: {'value': value});
+      _handlerCallbacks!.customAction(req);
     });
   }
 
@@ -67,8 +67,10 @@ class AudioServiceMpris extends AudioServicePlatform {
   @override
   Future<void> configure(ConfigureRequest request) async {
     log('Configure AudioServiceLinux.', name: 'audio_service_mpris');
-    assert(request.config.androidNotificationChannelId != null,
-          "androidNotificationChannelId is required for registering DBus object. e.g com.ryanheise.myapp.channel.audio");
+    assert(
+        request.config.androidNotificationChannelId != null,
+        "androidNotificationChannelId is required for registering"
+        " DBus object. e.g com.ryanheise.myapp.channel.audio");
 
     _dBusClient = DBusClient.session();
     _mpris = OrgMprisMediaPlayer2(
@@ -121,10 +123,8 @@ class AudioServiceMpris extends AudioServicePlatform {
   }
 
   @override
-  Future<void> notifyChildrenChanged(
-      NotifyChildrenChangedRequest request) async {
-    throw UnimplementedError(
-        'notifyChildrenChanged() has not been implemented.');
+  Future<void> notifyChildrenChanged(NotifyChildrenChangedRequest request) async {
+    throw UnimplementedError('notifyChildrenChanged() has not been implemented.');
   }
 
   @override

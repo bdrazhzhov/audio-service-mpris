@@ -41,17 +41,17 @@ flutter pub add audio_service_mpris
 
 **Methods**
 
-| Name                                                                                                          | Supported |
-|---------------------------------------------------------------------------------------------------------------|-----------|
-| [Next](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Next)               | ✅         |
-| [Previous](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Previous)       | ✅         |
-| [Pause](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Pause)             | ✅         |
-| [PlayPause](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:PlayPause)     | ✅         |
-| [Stop](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Stop)               | ✅         |
-| [Play](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Play)               | ✅         |
-| [Seek](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Seek)               | ❌         |
-| [SetPosition](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:SetPosition) | ✅         |
-| [OpenUri](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:OpenUri)         | ❌         |
+| Name                                                                                                          | Supported                                                                                                                                            |
+|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [Next](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Next)               | ✅                                                                                                                                                    |
+| [Previous](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Previous)       | ✅                                                                                                                                                    |
+| [Pause](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Pause)             | ✅                                                                                                                                                    |
+| [PlayPause](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:PlayPause)     | ✅                                                                                                                                                    |
+| [Stop](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Stop)               | ✅                                                                                                                                                    |
+| [Play](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Play)               | ✅                                                                                                                                                    |
+| [Seek](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:Seek)               | ❌ `AudioServicePlatform` doesn't have [MPRIS Seek](https://specifications.freedesktop.org/mpris/latest/Player_Interface.html#Method:Seek) equivalent |
+| [SetPosition](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:SetPosition) | ✅                                                                                                                                                    |
+| [OpenUri](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Method:OpenUri)         | ❌                                                                                                                                                    |
 
 **Signals**
 
@@ -68,7 +68,7 @@ flutter pub add audio_service_mpris
 | [Rate](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Property:Rate)                     | ✅         | `1.0`                                             |
 | [Shuffle](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Property:Shuffle)               | ❌         |                                                   |
 | [Metadata](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Property:Metadata)             | ✅         | Being changed on AudioHandler mediaItem change    |
-| [Volume](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Property:Volume)                 | ❌         | AudioServicePlatform doesn't support it           |
+| [Volume](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Property:Volume)                 | ❌         | `AudioServicePlatform` doesn't support it         |
 | [Position](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Property:Position)             | ✅         | Being changed on AudioHandler player state change |
 | [MinimumRate](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Property:MinimumRate)       | ✅         | `1.0`                                             |
 | [MaximumRate](https://specifications.freedesktop.org/mpris-spec/2.2/Player_Interface.html#Property:MaximumRate)       | ✅         | `1.0`                                             |

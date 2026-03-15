@@ -23,8 +23,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Creates a new object to expose on [path].
   OrgMprisMediaPlayer2(
-      {DBusObjectPath path = const DBusObjectPath.unchecked('/'),
-      required this.identity})
+      {DBusObjectPath path = const DBusObjectPath.unchecked('/'), required this.identity})
       : super(path);
 
   /// Gets value of property org.mpris.MediaPlayer2.CanQuit
@@ -125,8 +124,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Sets property org.mpris.MediaPlayer2.Player.Rate
   Future<DBusMethodResponse> setRate(double value) async {
-    log('Set org.mpris.MediaPlayer2.Player.Rate not implemented',
-        name: 'audio_service_mpris');
+    log('Set org.mpris.MediaPlayer2.Player.Rate not implemented', name: 'audio_service_mpris');
     return DBusMethodSuccessResponse([]);
   }
 
@@ -151,8 +149,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Gets value of property org.mpris.MediaPlayer2.Player.Volume
   DBusDouble getVolume() {
-    log('Get org.mpris.MediaPlayer2.Player.Volume not implemented',
-        name: 'audio_service_mpris');
+    log('Get org.mpris.MediaPlayer2.Player.Volume not implemented', name: 'audio_service_mpris');
     return const DBusDouble(1.0);
   }
 
@@ -246,8 +243,6 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Seek()
   Future<DBusMethodResponse> doSeek(int offset) async {
-    log('org.mpris.MediaPlayer2.Player.Seek() not implemented',
-        name: 'audio_service_mpris');
     return DBusMethodSuccessResponse([]);
   }
 
@@ -265,8 +260,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   /// Emits signal org.mpris.MediaPlayer2.Player.Seeked
   Future<void> emitSeeked(Duration position) async {
-    await emitSignal('org.mpris.MediaPlayer2.Player', 'Seeked',
-        [DBusInt64(position.inMicroseconds)]);
+    await emitSignal(
+        'org.mpris.MediaPlayer2.Player', 'Seeked', [DBusInt64(position.inMicroseconds)]);
   }
 
   @override
@@ -276,18 +271,14 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         DBusIntrospectMethod('Raise'),
         DBusIntrospectMethod('Quit')
       ], properties: [
-        DBusIntrospectProperty('CanQuit', DBusSignature('b'),
-            access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('CanQuit', DBusSignature('b'), access: DBusPropertyAccess.read),
         //DBusIntrospectProperty('Fullscreen', DBusSignature('b'),
         //    access: DBusPropertyAccess.readwrite),
         //DBusIntrospectProperty('CanSetFullscreen', DBusSignature('b'),
         //    access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('CanRaise', DBusSignature('b'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('HasTrackList', DBusSignature('b'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('Identity', DBusSignature('s'),
-            access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('CanRaise', DBusSignature('b'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('HasTrackList', DBusSignature('b'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('Identity', DBusSignature('s'), access: DBusPropertyAccess.read),
         //DBusIntrospectProperty('DesktopEntry', DBusSignature('s'),
         //    access: DBusPropertyAccess.read),
         DBusIntrospectProperty('SupportedUriSchemes', DBusSignature('as'),
@@ -303,53 +294,37 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         DBusIntrospectMethod('Stop'),
         DBusIntrospectMethod('Play'),
         DBusIntrospectMethod('Seek', args: [
-          DBusIntrospectArgument(DBusSignature('x'), DBusArgumentDirection.in_,
-              name: 'Offset')
+          DBusIntrospectArgument(DBusSignature('x'), DBusArgumentDirection.in_, name: 'Offset')
         ]),
         DBusIntrospectMethod('SetPosition', args: [
-          DBusIntrospectArgument(DBusSignature('o'), DBusArgumentDirection.in_,
-              name: 'TrackId'),
-          DBusIntrospectArgument(DBusSignature('x'), DBusArgumentDirection.in_,
-              name: 'Position')
+          DBusIntrospectArgument(DBusSignature('o'), DBusArgumentDirection.in_, name: 'TrackId'),
+          DBusIntrospectArgument(DBusSignature('x'), DBusArgumentDirection.in_, name: 'Position')
         ]),
         DBusIntrospectMethod('OpenUri', args: [
-          DBusIntrospectArgument(DBusSignature('s'), DBusArgumentDirection.in_,
-              name: 'Uri')
+          DBusIntrospectArgument(DBusSignature('s'), DBusArgumentDirection.in_, name: 'Uri')
         ])
       ], signals: [
         DBusIntrospectSignal('Seeked', args: [
-          DBusIntrospectArgument(DBusSignature('x'), DBusArgumentDirection.out,
-              name: 'Position')
+          DBusIntrospectArgument(DBusSignature('x'), DBusArgumentDirection.out, name: 'Position')
         ])
       ], properties: [
         DBusIntrospectProperty('PlaybackStatus', DBusSignature('s'),
             access: DBusPropertyAccess.read),
         DBusIntrospectProperty('LoopStatus', DBusSignature('s'),
             access: DBusPropertyAccess.readwrite),
-        DBusIntrospectProperty('Rate', DBusSignature('d'),
-            access: DBusPropertyAccess.readwrite),
-        DBusIntrospectProperty('Metadata', DBusSignature('a{sv}'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('Volume', DBusSignature('d'),
-            access: DBusPropertyAccess.readwrite),
-        DBusIntrospectProperty('Position', DBusSignature('x'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('MinimumRate', DBusSignature('d'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('MaximumRate', DBusSignature('d'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('CanGoNext', DBusSignature('b'),
-            access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('Rate', DBusSignature('d'), access: DBusPropertyAccess.readwrite),
+        DBusIntrospectProperty('Metadata', DBusSignature('a{sv}'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('Volume', DBusSignature('d'), access: DBusPropertyAccess.readwrite),
+        DBusIntrospectProperty('Position', DBusSignature('x'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('MinimumRate', DBusSignature('d'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('MaximumRate', DBusSignature('d'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('CanGoNext', DBusSignature('b'), access: DBusPropertyAccess.read),
         DBusIntrospectProperty('CanGoPrevious', DBusSignature('b'),
             access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('CanPlay', DBusSignature('b'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('CanPause', DBusSignature('b'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('CanSeek', DBusSignature('b'),
-            access: DBusPropertyAccess.read),
-        DBusIntrospectProperty('CanControl', DBusSignature('b'),
-            access: DBusPropertyAccess.read)
+        DBusIntrospectProperty('CanPlay', DBusSignature('b'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('CanPause', DBusSignature('b'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('CanSeek', DBusSignature('b'), access: DBusPropertyAccess.read),
+        DBusIntrospectProperty('CanControl', DBusSignature('b'), access: DBusPropertyAccess.read)
       ])
     ];
   }
@@ -410,8 +385,8 @@ class OrgMprisMediaPlayer2 extends DBusObject {
         if (methodCall.signature != DBusSignature('ox')) {
           return DBusMethodErrorResponse.invalidArgs();
         }
-        return doSetPosition(methodCall.values[0].asObjectPath().toString(),
-            methodCall.values[1].asInt64());
+        return doSetPosition(
+            methodCall.values[0].asObjectPath().toString(), methodCall.values[1].asInt64());
       } else if (methodCall.name == 'OpenUri') {
         if (methodCall.signature != DBusSignature('s')) {
           return DBusMethodErrorResponse.invalidArgs();
@@ -427,8 +402,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
 
   @override
   Future<DBusMethodResponse> getProperty(String interface, String name) async {
-    log('Requested property $name from $interface',
-        name: 'audio_service_mpris');
+    log('Requested property $name from $interface', name: 'audio_service_mpris');
 
     if (interface == 'org.mpris.MediaPlayer2') {
       DBusValue value;
@@ -498,8 +472,7 @@ class OrgMprisMediaPlayer2 extends DBusObject {
   }
 
   @override
-  Future<DBusMethodResponse> setProperty(
-      String interface, String name, DBusValue value) async {
+  Future<DBusMethodResponse> setProperty(String interface, String name, DBusValue value) async {
     if (interface == 'org.mpris.MediaPlayer2') {
       if (name == 'CanQuit') {
         return DBusMethodErrorResponse.propertyReadOnly();

@@ -1,3 +1,7 @@
+## 0.2.1
+
+Updated README
+
 ## 0.2.0
 
 Disallowed `null` in `androidNotificationChannelId`
