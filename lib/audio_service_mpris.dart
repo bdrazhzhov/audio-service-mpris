@@ -17,6 +17,8 @@ class AudioServiceMpris extends AudioServicePlatform {
   late final _MprisMediaPlayer _mpris;
   AudioHandlerCallbacks? _handlerCallbacks;
   bool _isPlaying = false;
+  bool _isRegistered = false;
+  String? _serviceName;
 
   static void registerWith() {
     AudioServicePlatform.instance = AudioServiceMpris();
@@ -189,15 +191,14 @@ class AudioServiceMpris extends AudioServicePlatform {
     _listenToMethodEvents();
 
     await _dBusClient.registerObject(_mpris);
-    await _dBusClient.requestName(
-      'org.mpris.MediaPlayer2.${_defaults.dBusName}.instance$pid',
-      flags: {DBusRequestNameFlag.doNotQueue},
-    );
+    _serviceName = 'org.mpris.MediaPlayer2.${_defaults.dBusName}.instance$pid';
+    await _registerIfNeeded();
     _mpris.identity = _defaults.identity;
   }
 
   @override
   Future<void> setState(SetStateRequest request) async {
+    await _registerIfNeeded();
     _mpris.position = request.state.updatePosition;
     _isPlaying = request.state.playing;
     _mpris.playbackState = _isPlaying ? 'Playing' : 'Paused';
@@ -211,6 +212,7 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> setMediaItem(SetMediaItemRequest request) async {
+    await _registerIfNeeded();
     List<String>? artist;
     if (request.mediaItem.artist != null) artist = [request.mediaItem.artist!];
 
@@ -229,6 +231,26 @@ class AudioServiceMpris extends AudioServicePlatform {
   @override
   Future<void> stopService(StopServiceRequest request) async {
     _mpris.playbackState = 'Stopped';
+    await _unregisterIfNeeded();
+  }
+
+  Future<void> _registerIfNeeded() async {
+    if (_isRegistered) return;
+    if (_serviceName != null) {
+      await _dBusClient.requestName(
+        _serviceName!,
+        flags: {DBusRequestNameFlag.doNotQueue},
+      );
+    }
+    _isRegistered = true;
+  }
+
+  Future<void> _unregisterIfNeeded() async {
+    if (!_isRegistered) return;
+    if (_serviceName != null) {
+      await _dBusClient.releaseName(_serviceName!);
+    }
+    _isRegistered = false;
   }
 
   @override
