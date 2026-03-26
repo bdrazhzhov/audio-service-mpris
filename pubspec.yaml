@@ -1,6 +1,6 @@
 name: audio_service_mpris
 description: audio_service platform interface supporting Media Player Remote Interfacing Specification.
-version: 1.0.0-beta.1
+version: 1.0.0-beta.2
 homepage: https://github.com/bdrazhzhov/audio-service-mpris
 
 environment:

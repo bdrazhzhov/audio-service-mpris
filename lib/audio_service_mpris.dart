@@ -231,25 +231,21 @@ class AudioServiceMpris extends AudioServicePlatform {
   @override
   Future<void> stopService(StopServiceRequest request) async {
     _mpris.playbackState = 'Stopped';
+    _mpris.metadata = _Metadata(title: 'No title');
     await _unregisterIfNeeded();
   }
 
   Future<void> _registerIfNeeded() async {
-    if (_isRegistered) return;
-    if (_serviceName != null) {
-      await _dBusClient.requestName(
-        _serviceName!,
-        flags: {DBusRequestNameFlag.doNotQueue},
-      );
-    }
+    if (_isRegistered || _serviceName == null) return;
+
+    await _dBusClient.requestName(_serviceName!, flags: {DBusRequestNameFlag.doNotQueue});
     _isRegistered = true;
   }
 
   Future<void> _unregisterIfNeeded() async {
-    if (!_isRegistered) return;
-    if (_serviceName != null) {
-      await _dBusClient.releaseName(_serviceName!);
-    }
+    if (!_isRegistered || _serviceName == null) return;
+
+    await _dBusClient.releaseName(_serviceName!);
     _isRegistered = false;
   }
 
