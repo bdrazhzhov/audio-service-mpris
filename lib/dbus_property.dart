@@ -11,6 +11,7 @@ class _DBusProperty<T extends Object> {
   final String interfaceName;
   final DBusSignature signature = DBusSignature(_getSignature<T>());
   final bool readOnly;
+  final bool emitsChangedSignal;
   T _value;
 
   static final DBusObject _mpris = _MprisMediaPlayer();
@@ -22,6 +23,7 @@ class _DBusProperty<T extends Object> {
     required this.interfaceName,
     required T initialValue,
     this.readOnly = true,
+    this.emitsChangedSignal = true,
   }) : _value = initialValue;
 
   T get value => _value;
@@ -29,7 +31,9 @@ class _DBusProperty<T extends Object> {
     if (_value == newValue) return;
 
     _value = newValue;
-    _mpris.emitPropertiesChanged(interfaceName, changedProperties: {name: _toDbusValue(newValue)});
+    if (emitsChangedSignal) {
+      _mpris.emitPropertiesChanged(interfaceName, changedProperties: {name: _toDbusValue(newValue)});
+    }
   }
 
   DBusMethodResponse setFromDbus(DBusValue value) {
@@ -42,7 +46,9 @@ class _DBusProperty<T extends Object> {
     }
 
     _value = _fromDbusValue(value) as T;
-    _mpris.emitPropertiesChanged(interfaceName, changedProperties: {name: value});
+    if (emitsChangedSignal) {
+      _mpris.emitPropertiesChanged(interfaceName, changedProperties: {name: value});
+    }
     _eventStreamController.add(_PropertyEvent(name, _value));
 
     return DBusMethodSuccessResponse([]);
@@ -54,6 +60,10 @@ class _DBusProperty<T extends Object> {
     name,
     signature,
     access: readOnly ? DBusPropertyAccess.read : DBusPropertyAccess.readwrite,
+    annotations: [
+      if (!emitsChangedSignal)
+        DBusIntrospectAnnotation('org.freedesktop.DBus.Property.EmitsChangedSignal', 'false'),
+    ],
   );
   DBusIntrospectProperty get introspection => _introspection;
 }

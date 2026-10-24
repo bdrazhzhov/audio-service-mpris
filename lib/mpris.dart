@@ -307,10 +307,17 @@ class _MprisMediaPlayer extends DBusObject {
     name: 'Position',
     interfaceName: 'org.mpris.MediaPlayer2.Player',
     initialValue: Duration.zero,
+    emitsChangedSignal: false,
   );
 
   Duration get position => _positionProperty.value;
   set position(Duration value) => _positionProperty.value = value;
+
+  Future<void> emitSeeked(Duration position) => emitSignal(
+        'org.mpris.MediaPlayer2.Player',
+        'Seeked',
+        [DBusInt64(position.inMicroseconds)],
+      );
 
   void _emitEvent(_MprisEventType type, [Object? value]) {
     _eventStreamController.add(_MprisEvent(type, value));

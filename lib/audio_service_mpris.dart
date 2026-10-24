@@ -19,6 +19,11 @@ class AudioServiceMpris extends AudioServicePlatform {
   bool _isPlaying = false;
   bool _isRegistered = false;
   String? _serviceName;
+  PlaybackStateMessage? _previousState;
+  String? _trackId;
+
+  // Allow for position sampling and timestamp precision, not normal playback.
+  static const _positionTolerance = Duration(milliseconds: 100);
 
   static void registerWith() {
     AudioServicePlatform.instance = AudioServiceMpris();
@@ -199,6 +204,7 @@ class AudioServiceMpris extends AudioServicePlatform {
   @override
   Future<void> setState(SetStateRequest request) async {
     await _registerIfNeeded();
+    final seeked = _hasPositionDiscontinuity(request.state);
     _mpris.position = request.state.updatePosition;
     _mpris.canSeek = request.state.systemActions.contains(MediaActionMessage.seek);
     _isPlaying = request.state.playing;
@@ -209,11 +215,62 @@ class AudioServiceMpris extends AudioServicePlatform {
       orElse: () => 'None',
     );
     _mpris.rate = request.state.speed;
+    _previousState =
+        request.state.processingState == AudioProcessingStateMessage.idle ? null : request.state;
+
+    if (seeked) {
+      await _mpris.emitSeeked(_currentPosition(request.state));
+    }
+  }
+
+  bool _hasPositionDiscontinuity(PlaybackStateMessage state) {
+    // audio_service follows the transition to idle with stopService().
+    if (state.processingState == AudioProcessingStateMessage.idle) return false;
+
+    final previous = _previousState;
+    var expected = Duration.zero;
+    if (previous != null) {
+      final elapsed = state.updateTime.difference(previous.updateTime);
+      // A clock adjustment cannot establish a position discontinuity.
+      if (elapsed.isNegative) return false;
+
+      expected = previous.updatePosition;
+      if (previous.playing) {
+        // Use the old rate over this interval, including when pausing or
+        // changing speed. Buffering still advertises Playing to MPRIS clients.
+        expected += elapsed * previous.speed;
+      }
+    }
+
+    // A new track or a restart after stop is expected to begin at zero.
+    return (state.updatePosition - _clampPosition(expected)).abs() > _positionTolerance;
+  }
+
+  Duration _currentPosition(PlaybackStateMessage state) {
+    var position = state.updatePosition;
+    final elapsed = DateTime.now().difference(state.updateTime);
+    if (state.playing &&
+        state.processingState == AudioProcessingStateMessage.ready &&
+        !elapsed.isNegative) {
+      position += elapsed * state.speed;
+    }
+    return _clampPosition(position);
+  }
+
+  Duration _clampPosition(Duration position) {
+    if (position.isNegative) return Duration.zero;
+    final length = _mpris.metadata.length;
+    if (length != null && position > length) return length;
+    return position;
   }
 
   @override
   Future<void> setMediaItem(SetMediaItemRequest request) async {
     await _registerIfNeeded();
+    if (_trackId != request.mediaItem.id) {
+      _trackId = request.mediaItem.id;
+      _previousState = null;
+    }
     List<String>? artist;
     if (request.mediaItem.artist != null) artist = [request.mediaItem.artist!];
 
@@ -232,6 +289,8 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> stopService(StopServiceRequest request) async {
+    _previousState = null;
+    _trackId = null;
     _mpris.playbackState = 'Stopped';
     _mpris.metadata = _Metadata(title: 'No title');
     await _unregisterIfNeeded();
