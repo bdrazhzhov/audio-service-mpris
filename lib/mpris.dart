@@ -9,6 +9,7 @@ enum _MprisEventType {
   controlStop,
   openUri,
   position,
+  seek,
 }
 
 enum _MprisMethod { quit, raise }
@@ -307,7 +308,7 @@ class _MprisMediaPlayer extends DBusObject {
     name: 'Position',
     interfaceName: 'org.mpris.MediaPlayer2.Player',
     initialValue: Duration.zero,
-    emitsChangedSignal: false,
+    changeNotification: PropertyChangeNotification.silent,
   );
 
   Duration get position => _positionProperty.value;
@@ -377,13 +378,19 @@ class _MprisMediaPlayer extends DBusObject {
 
   /// Implementation of org.mpris.MediaPlayer2.Player.Seek()
   Future<DBusMethodResponse> _doSeek(int offset) async {
+    if(_canSeekProperty.value) {
+      _emitEvent(_MprisEventType.seek, Duration(microseconds: offset));
+    }
+
     return DBusMethodSuccessResponse([]);
   }
 
   /// Implementation of org.mpris.MediaPlayer2.Player.SetPosition()
   Future<DBusMethodResponse> _doSetPosition(String trackId, int position) async {
-    if (trackId != metadata.trackId) return DBusMethodSuccessResponse([]);
-    _emitEvent(_MprisEventType.position, Duration(microseconds: position));
+    if (_canSeekProperty.value && trackId == metadata.trackId) {
+      _emitEvent(_MprisEventType.position, Duration(microseconds: position));
+    }
+
     return DBusMethodSuccessResponse([]);
   }
 

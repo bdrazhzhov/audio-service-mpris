@@ -1,22 +1,20 @@
 part of 'audio_service_mpris.dart';
 
-String _formatTrackId(String id) =>
-    '/audio_service_mpris/Track/track_${id.replaceAll(RegExp(r'[^A-Za-z0-9_]+'), '_')}';
-
 /// https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
 class _Metadata {
-  _Metadata(
-      {required this.title,
-      this.trackId,
-      this.length,
-      this.artist,
-      this.lyrics,
-      this.artUrl,
-      this.album,
-      this.albumArtist,
-      this.discNumber,
-      this.trackNumber,
-      this.genre});
+  _Metadata({
+    required this.title,
+    this.trackId,
+    this.length,
+    this.artist,
+    this.lyrics,
+    this.artUrl,
+    this.album,
+    this.albumArtist,
+    this.discNumber,
+    this.trackNumber,
+    this.genre,
+  });
 
   /// mpris:trackid
   ///
@@ -123,18 +121,19 @@ class _Metadata {
     return result;
   }
 
-  _Metadata copyWith(
-      {String? title,
-      String? trackId,
-      Duration? length,
-      List<String>? artist,
-      String? lyrics,
-      String? artUrl,
-      String? album,
-      List<String>? albumArtist,
-      int? discNumber,
-      int? trackNumber,
-      List<String>? genre}) {
+  _Metadata copyWith({
+    String? title,
+    String? trackId,
+    Duration? length,
+    List<String>? artist,
+    String? lyrics,
+    String? artUrl,
+    String? album,
+    List<String>? albumArtist,
+    int? discNumber,
+    int? trackNumber,
+    List<String>? genre,
+  }) {
     return _Metadata(
       title: title ?? this.title,
       trackId: trackId ?? this.trackId,

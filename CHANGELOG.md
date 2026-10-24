@@ -1,3 +1,8 @@
+## 1.0.0-beta.3
+
+- MPRIS `Seek` support
+- MPRIS `SetPosition` improvements
+
 ## 1.0.0-beta.2
 
 - Removing the D-Bus name when the audio service is stopped

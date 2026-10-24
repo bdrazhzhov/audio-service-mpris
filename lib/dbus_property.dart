@@ -1,5 +1,7 @@
 part of 'audio_service_mpris.dart';
 
+enum PropertyChangeNotification { emits, silent, invalidates, constant }
+
 class _PropertyEvent {
   final String name;
   final Object value;
@@ -11,7 +13,7 @@ class _DBusProperty<T extends Object> {
   final String interfaceName;
   final DBusSignature signature = DBusSignature(_getSignature<T>());
   final bool readOnly;
-  final bool emitsChangedSignal;
+  final PropertyChangeNotification changeNotification;
   T _value;
 
   static final DBusObject _mpris = _MprisMediaPlayer();
@@ -23,18 +25,28 @@ class _DBusProperty<T extends Object> {
     required this.interfaceName,
     required T initialValue,
     this.readOnly = true,
-    this.emitsChangedSignal = true,
+    this.changeNotification = PropertyChangeNotification.emits,
   }) : _value = initialValue;
 
-  T get value => _value;
-  set value(T newValue) {
+  void _setValue(T newValue) {
     if (_value == newValue) return;
 
     _value = newValue;
-    if (emitsChangedSignal) {
-      _mpris.emitPropertiesChanged(interfaceName, changedProperties: {name: _toDbusValue(newValue)});
+    switch (changeNotification) {
+      case PropertyChangeNotification.emits:
+        _mpris.emitPropertiesChanged(
+          interfaceName,
+          changedProperties: {name: _toDbusValue(newValue)},
+        );
+      case PropertyChangeNotification.invalidates:
+        _mpris.emitPropertiesChanged(interfaceName, invalidatedProperties: [name]);
+      default:
     }
   }
+
+  T get value => _value;
+
+  set value(T newValue) => _setValue(newValue);
 
   DBusMethodResponse setFromDbus(DBusValue value) {
     if (value.signature != signature) {
@@ -45,10 +57,8 @@ class _DBusProperty<T extends Object> {
       return DBusMethodErrorResponse.propertyReadOnly();
     }
 
-    _value = _fromDbusValue(value) as T;
-    if (emitsChangedSignal) {
-      _mpris.emitPropertiesChanged(interfaceName, changedProperties: {name: value});
-    }
+    final newValue = _fromDbusValue(value) as T;
+    _setValue(newValue);
     _eventStreamController.add(_PropertyEvent(name, _value));
 
     return DBusMethodSuccessResponse([]);
@@ -61,8 +71,15 @@ class _DBusProperty<T extends Object> {
     signature,
     access: readOnly ? DBusPropertyAccess.read : DBusPropertyAccess.readwrite,
     annotations: [
-      if (!emitsChangedSignal)
-        DBusIntrospectAnnotation('org.freedesktop.DBus.Property.EmitsChangedSignal', 'false'),
+      DBusIntrospectAnnotation(
+        'org.freedesktop.DBus.Property.EmitsChangedSignal',
+        switch (changeNotification) {
+          PropertyChangeNotification.emits => 'true',
+          PropertyChangeNotification.silent => 'false',
+          PropertyChangeNotification.invalidates => 'invalidates',
+          PropertyChangeNotification.constant => 'const',
+        },
+      ),
     ],
   );
   DBusIntrospectProperty get introspection => _introspection;

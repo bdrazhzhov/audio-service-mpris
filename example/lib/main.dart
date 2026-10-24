@@ -189,7 +189,7 @@ class MainScreen extends StatelessWidget {
                   final queueState = snapshot.data ?? QueueState.empty;
                   final queue = queueState.queue;
                   return ReorderableListView(
-                    onReorder: (int oldIndex, int newIndex) {
+                    onReorderItem: (int oldIndex, int newIndex) {
                       if (oldIndex < newIndex) newIndex--;
                       _audioHandler.moveQueueItem(oldIndex, newIndex);
                     },
@@ -228,10 +228,30 @@ class MainScreen extends StatelessWidget {
   }
 }
 
-class ControlButtons extends StatelessWidget {
+class ControlButtons extends StatefulWidget {
   final AudioPlayerHandler audioHandler;
 
   const ControlButtons(this.audioHandler, {super.key});
+
+  @override
+  State<ControlButtons> createState() => _ControlButtonsState();
+}
+
+class _ControlButtonsState extends State<ControlButtons> {
+  var _position = Duration.zero;
+  late StreamSubscription<Duration> positionSub;
+
+  @override
+  void initState() {
+    super.initState();
+    positionSub = AudioService.position.listen((Duration position){ _position = position; });
+  }
+
+  @override
+  void dispose() {
+    positionSub.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,24 +267,32 @@ class ControlButtons extends StatelessWidget {
               divisions: 10,
               min: 0.0,
               max: 1.0,
-              value: audioHandler.volume.value,
-              stream: audioHandler.volume,
-              onChanged: audioHandler.setVolume,
+              value: widget.audioHandler.volume.value,
+              stream: widget.audioHandler.volume,
+              onChanged: widget.audioHandler.setVolume,
             );
           },
         ),
         StreamBuilder<QueueState>(
-          stream: audioHandler.queueState,
+          stream: widget.audioHandler.queueState,
           builder: (context, snapshot) {
             final queueState = snapshot.data ?? QueueState.empty;
             return IconButton(
               icon: const Icon(Icons.skip_previous),
-              onPressed: queueState.hasPrevious ? audioHandler.skipToPrevious : null,
+              onPressed: queueState.hasPrevious ? widget.audioHandler.skipToPrevious : null,
             );
           },
         ),
+        IconButton(
+          onPressed: () async {
+            Duration newPosition = _position - const Duration(seconds: 10);
+            if(newPosition.isNegative) newPosition = Duration.zero;
+            widget.audioHandler.seek(newPosition);
+          },
+          icon: const Icon(Icons.replay_10),
+        ),
         StreamBuilder<PlaybackState>(
-          stream: audioHandler.playbackState,
+          stream: widget.audioHandler.playbackState,
           builder: (context, snapshot) {
             final playbackState = snapshot.data;
             final processingState = playbackState?.processingState;
@@ -281,29 +309,35 @@ class ControlButtons extends StatelessWidget {
               return IconButton(
                 icon: const Icon(Icons.play_arrow),
                 iconSize: 64.0,
-                onPressed: audioHandler.play,
+                onPressed: widget.audioHandler.play,
               );
             } else {
               return IconButton(
                 icon: const Icon(Icons.pause),
                 iconSize: 64.0,
-                onPressed: audioHandler.pause,
+                onPressed: widget.audioHandler.pause,
               );
             }
           },
         ),
+        IconButton(
+          onPressed: () async {
+            widget.audioHandler.seek(_position + const Duration(seconds: 10));
+          },
+          icon: const Icon(Icons.forward_10),
+        ),
         StreamBuilder<QueueState>(
-          stream: audioHandler.queueState,
+          stream: widget.audioHandler.queueState,
           builder: (context, snapshot) {
             final queueState = snapshot.data ?? QueueState.empty;
             return IconButton(
               icon: const Icon(Icons.skip_next),
-              onPressed: queueState.hasNext ? audioHandler.skipToNext : null,
+              onPressed: queueState.hasNext ? widget.audioHandler.skipToNext : null,
             );
           },
         ),
         StreamBuilder<double>(
-          stream: audioHandler.speed,
+          stream: widget.audioHandler.speed,
           builder: (context, snapshot) => IconButton(
             icon: Text("${snapshot.data?.toStringAsFixed(1)}x",
                 style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -314,9 +348,9 @@ class ControlButtons extends StatelessWidget {
                 divisions: 10,
                 min: 0.5,
                 max: 1.5,
-                value: audioHandler.speed.value,
-                stream: audioHandler.speed,
-                onChanged: audioHandler.setSpeed,
+                value: widget.audioHandler.speed.value,
+                stream: widget.audioHandler.speed,
+                onChanged: widget.audioHandler.setSpeed,
               );
             },
           ),

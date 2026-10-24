@@ -6,15 +6,15 @@ This plugin enables Media Player Remote Interfacing Specification (MPRIS) suppor
 
 ![Example on KDE Plasma](images/kde-media-control.png)
 
-##  1.0.0 Beta
+##  1.0.0 Beta 3
 
-Version `1.0.0-beta.1` is now available for testing. This version adds support for specifying default values for properties not managed by [audio_service](https://pub.dev/packages/audio_service), and allows updating all properties at runtime.
+Version `1.0.0-beta.3` is now available for testing. This version adds support for specifying default values for properties not managed by [audio_service](https://pub.dev/packages/audio_service), and allows updating all properties at runtime.
 
 ###  Install beta version
 
 ```yaml
 dependencies:
-  audio_service_mpris: ^1.0.0-beta.1
+  audio_service_mpris: ^1.0.0-beta.3
 ```
 
 ###  Stability
@@ -70,6 +70,7 @@ You can save value returned by `AudioServiceMpris.init(...)` and use it when you
 final mpris = AudioServiceMpris.init(...);
 // or
 final mpris = Mpris();
+
 mpris.identity = 'My Music Player';
 mpris.desktopEntry = 'com.example.music';
 mpris.minimumRate = 0.5;
@@ -89,24 +90,24 @@ Note: Properties `canPlay`, `canPause`, `canGoNext`, and `canGoPrevious` are onl
 
 #### Methods
 
-| Method                                                                                        | Supported |
-|-----------------------------------------------------------------------------------------------|-----------|
-| [Raise](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Raise) | ✅         |
-| [Quit](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Quit)   | ✅         |
+All methods defined by this interface are supported:
+
+- [Raise](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Raise)
+- [Quit](https://specifications.freedesktop.org/mpris-spec/2.2/Media_Player.html#Method:Quit)
 
 #### Properties
 
 | Property            | Supported | Default             |
 |---------------------|-----------|---------------------|
-| CanQuit             | ✅         | false               |
-| Fullscreen          | ✅         | false               |
-| CanSetFullscreen    | ✅         | false               |
-| CanRaise            | ✅         | false               |
-| HasTrackList        | ✅         | false               |
-| Identity            | ✅         | `'My Audio Player'` |
-| DesktopEntry        | ✅         | `''`                |
-| SupportedUriSchemes | ✅         | `[]`                |
-| SupportedMimeTypes  | ✅         | `[]`                |
+| CanQuit             | ✅        | false               |
+| Fullscreen          | ✅        | false               |
+| CanSetFullscreen    | ✅        | false               |
+| CanRaise            | ✅        | false               |
+| HasTrackList        | ✅        | false               |
+| Identity            | ✅        | `'My Audio Player'` |
+| DesktopEntry        | ✅        | `''`                |
+| SupportedUriSchemes | ✅        | `[]`                |
+| SupportedMimeTypes  | ✅        | `[]`                |
 
 ------
 
@@ -114,43 +115,31 @@ Note: Properties `canPlay`, `canPause`, `canGoNext`, and `canGoPrevious` are onl
 
 #### Methods
 
-| Method      | Supported                                 |
-|-------------|-------------------------------------------|
-| Next        | ✅                                         |
-| Previous    | ✅                                         |
-| Pause       | ✅                                         |
-| PlayPause   | ✅                                         |
-| Stop        | ✅                                         |
-| Play        | ✅                                         |
-| Seek        | ❌ No equivalent in `AudioServicePlatform` |
-| SetPosition | ✅                                         |
-| OpenUri     | ✅                                         |
+All methods defined by this interface are supported: `Next`, `Previous`, `Pause`, `PlayPause`, `Stop`, `Play`, `Seek`, `SetPosition`, and `OpenUri`.
 
 #### Signals
 
-| Signal | Supported                                 |
-|--------|-------------------------------------------|
-| Seeked | ❌ No equivalent in `AudioServicePlatform` |
+The `Seeked` signal is supported.
 
 #### Properties
 
 | Property       | Supported | Default                         |
 |----------------|-----------|---------------------------------|
-| PlaybackStatus | ✅         | Updated from AudioHandler state |
-| LoopStatus     | ✅         | `'None'`                        |
-| Rate           | ✅         | `1.0`                           |
-| Shuffle        | ✅         | `false`                         |
-| Metadata       | ✅         | Updated from current media item |
-| Volume         | ❌         | Not supported                   |
-| Position       | ✅         | Updated from AudioHandler state |
-| MinimumRate    | ✅         | `1.0`                           |
-| MaximumRate    | ✅         | `1.0`                           |
-| CanGoNext      | ✅         | `false`                         |
-| CanGoPrevious  | ✅         | `false`                         |
-| CanPlay        | ✅         | `false`                         |
-| CanPause       | ✅         | `false`                         |
-| CanSeek        | ❌         | `false`                         |
-| CanControl     | ✅         | `false`                         |
+| PlaybackStatus | ✅        | Updated from AudioHandler state |
+| LoopStatus     | ✅        | `'None'`                        |
+| Rate           | ✅        | `1.0`                           |
+| Shuffle        | ✅        | `false`                         |
+| Metadata       | ✅        | Updated from current media item |
+| Volume         | ❌        | Not supported                   |
+| Position       | ✅        | Updated from AudioHandler state |
+| MinimumRate    | ✅        | `1.0`                           |
+| MaximumRate    | ✅        | `1.0`                           |
+| CanGoNext      | ✅        | `false`                         |
+| CanGoPrevious  | ✅        | `false`                         |
+| CanPlay        | ✅        | `false`                         |
+| CanPause       | ✅        | `false`                         |
+| CanSeek        | ✅        | Updated from AudioHandler state |
+| CanControl     | ✅        | `false`                         |
 
 ------
 
@@ -161,4 +150,3 @@ Not supported.
 ### org.mpris.MediaPlayer2.Playlists
 
 Not supported.
-
