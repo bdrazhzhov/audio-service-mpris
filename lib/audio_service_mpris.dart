@@ -200,6 +200,7 @@ class AudioServiceMpris extends AudioServicePlatform {
   Future<void> setState(SetStateRequest request) async {
     await _registerIfNeeded();
     _mpris.position = request.state.updatePosition;
+    _mpris.canSeek = request.state.systemActions.contains(MediaActionMessage.seek);
     _isPlaying = request.state.playing;
     _mpris.playbackState = _isPlaying ? 'Playing' : 'Paused';
     _mpris.shuffle = request.state.shuffleMode != AudioServiceShuffleModeMessage.none;
@@ -220,6 +221,7 @@ class AudioServiceMpris extends AudioServicePlatform {
     if (request.mediaItem.genre != null) genre = [request.mediaItem.genre!];
 
     _mpris.metadata = _Metadata(
+        trackId: _formatTrackId(request.mediaItem.id),
         title: request.mediaItem.title,
         length: request.mediaItem.duration,
         artist: artist,

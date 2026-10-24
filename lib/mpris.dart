@@ -56,7 +56,7 @@ class _MprisMediaPlayer extends DBusObject {
     'Seek': _MethodHandler((call) => _doSeek(call.values[0].asInt64()), signature: 'x'),
     'SetPosition': _MethodHandler(
         (call) =>
-            _doSetPosition(call.values[0].asObjectPath().toString(), call.values[1].asInt64()),
+            _doSetPosition(call.values[0].asObjectPath().value, call.values[1].asInt64()),
         signature: 'ox'),
     'OpenUri': _MethodHandler((call) => _doOpenUri(call.values[0].asString()), signature: 's'),
   });
@@ -375,6 +375,7 @@ class _MprisMediaPlayer extends DBusObject {
 
   /// Implementation of org.mpris.MediaPlayer2.Player.SetPosition()
   Future<DBusMethodResponse> _doSetPosition(String trackId, int position) async {
+    if (trackId != metadata.trackId) return DBusMethodSuccessResponse([]);
     _emitEvent(_MprisEventType.position, Duration(microseconds: position));
     return DBusMethodSuccessResponse([]);
   }
