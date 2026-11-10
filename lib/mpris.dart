@@ -216,7 +216,7 @@ class _MprisMediaPlayer extends DBusObject {
   final _metadataProperty = _DBusProperty<_Metadata>(
     name: 'Metadata',
     interfaceName: 'org.mpris.MediaPlayer2.Player',
-    initialValue: _Metadata(title: 'No title'),
+    initialValue: _Metadata(),
   );
 
   _Metadata get metadata => _metadataProperty.value;

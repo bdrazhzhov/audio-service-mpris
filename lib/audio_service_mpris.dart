@@ -247,7 +247,7 @@ class AudioServiceMpris extends AudioServicePlatform {
     _mprisSeekHandler.resetPlaybackState();
     _trackId = null;
     _mpris.playbackState = 'Stopped';
-    _mpris.metadata = _Metadata(title: 'No title');
+    _mpris.metadata = _Metadata();
     await _unregisterIfNeeded();
   }
 
