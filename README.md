@@ -6,7 +6,7 @@ This plugin enables Media Player Remote Interfacing Specification (MPRIS) suppor
 
 ![Example on KDE Plasma](images/kde-media-control.png)
 
-##  1.0.0 Beta 3
+##  1.0.0 Beta 4
 
 Version `1.0.0-beta.3` is now available for testing. This version adds support for specifying default values for properties not managed by [audio_service](https://pub.dev/packages/audio_service), and allows updating all properties at runtime.
 
@@ -14,7 +14,7 @@ Version `1.0.0-beta.3` is now available for testing. This version adds support f
 
 ```yaml
 dependencies:
-  audio_service_mpris: ^1.0.0-beta.3
+  audio_service_mpris: ^1.0.0-beta.4
 ```
 
 ###  Stability

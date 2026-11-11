@@ -39,7 +39,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.0-beta.2"
+    version: "1.0.0-beta.4"
   audio_service_platform_interface:
     dependency: transitive
     description:

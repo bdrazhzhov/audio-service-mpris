@@ -1,3 +1,7 @@
+## 1.0.0-beta.4
+
+- Removed placeholder title when media isn't loaded
+
 ## 1.0.0-beta.3
 
 - MPRIS `Seek` support
