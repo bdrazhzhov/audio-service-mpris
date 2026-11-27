@@ -14,14 +14,22 @@ part 'mpris_facade.dart';
 part 'mpris_seek_handler.dart';
 
 class AudioServiceMpris extends AudioServicePlatform {
-  late final DBusClient _dBusClient;
-  late final _MprisMediaPlayer _mpris;
-  late final _MprisSeekHandler _mprisSeekHandler;
+  AudioServiceMpris({DBusClient Function()? dBusClientFactory})
+      : _dBusClientFactory = dBusClientFactory ?? DBusClient.session;
+
+  final DBusClient Function() _dBusClientFactory;
+  DBusClient? _dBusClient;
+  _MprisMediaPlayer? _mpris;
+  _MprisSeekHandler? _mprisSeekHandler;
+  final List<StreamSubscription<dynamic>> _subscriptions = [];
   AudioHandlerCallbacks? _handlerCallbacks;
   bool _isPlaying = false;
   bool _isRegistered = false;
   String? _serviceName;
   String? _trackId;
+
+  _MprisMediaPlayer get _player => _mpris!;
+  _MprisSeekHandler get _seekHandler => _mprisSeekHandler!;
 
   static void registerWith() {
     AudioServicePlatform.instance = AudioServiceMpris();
@@ -186,34 +194,88 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> configure(ConfigureRequest request) async {
-    _dBusClient = DBusClient.session();
-    _mpris = _MprisMediaPlayer();
-    _mprisSeekHandler = _MprisSeekHandler(mpris: _mpris);
+    await _teardownSession();
+
+    final client = _dBusClientFactory();
+    final mpris = _MprisMediaPlayer();
+    final seekHandler = _MprisSeekHandler(mpris: mpris);
+    _dBusClient = client;
+    _mpris = mpris;
+    _mprisSeekHandler = seekHandler;
 
     _listenToEvents();
     _listenToPropertyChanges();
     _listenToMethodEvents();
 
-    await _dBusClient.registerObject(_mpris);
-    _serviceName = 'org.mpris.MediaPlayer2.${_defaults.dBusName}.instance$pid';
-    await _registerIfNeeded();
-    _mpris.identity = _defaults.identity;
+    try {
+      await client.registerObject(mpris);
+      _serviceName = 'org.mpris.MediaPlayer2.${_defaults.dBusName}.instance$pid';
+      await _registerIfNeeded();
+      mpris.identity = _defaults.identity;
+    } catch (_) {
+      await _teardownSession();
+      rethrow;
+    }
+  }
+
+  /// Cancels stream subscriptions, unregisters the MPRIS D-Bus object, and
+  /// closes the D-Bus session client.
+  Future<void> dispose() async {
+    _handlerCallbacks = null;
+    await _teardownSession();
+  }
+
+  Future<void> _teardownSession() async {
+    _trackId = null;
+    final subscriptions = List<StreamSubscription<dynamic>>.of(_subscriptions);
+    _subscriptions.clear();
+    for (final subscription in subscriptions) {
+      await subscription.cancel();
+    }
+
+    final mpris = _mpris;
+    _mpris = null;
+    _mprisSeekHandler = null;
+    final client = _dBusClient;
+    _dBusClient = null;
+    final serviceName = _serviceName;
+    _serviceName = null;
+    final wasRegistered = _isRegistered;
+    _isRegistered = false;
+
+    if (client == null) return;
+    try {
+      if (wasRegistered && serviceName != null) {
+        await client.releaseName(serviceName);
+      }
+    } catch (_) {
+      // Ignore D-Bus errors during teardown.
+    }
+    try {
+      if (mpris != null) {
+        await client.unregisterObject(mpris);
+      }
+    } catch (_) {
+      // Ignore D-Bus errors during teardown.
+    } finally {
+      await client.close();
+    }
   }
 
   @override
   Future<void> setState(SetStateRequest request) async {
     await _registerIfNeeded();
-    _mpris.position = request.state.updatePosition;
-    _mpris.canSeek = request.state.systemActions.contains(MediaActionMessage.seek);
+    _player.position = request.state.updatePosition;
+    _player.canSeek = request.state.systemActions.contains(MediaActionMessage.seek);
     _isPlaying = request.state.playing;
-    _mpris.playbackState = _isPlaying ? 'Playing' : 'Paused';
-    _mpris.shuffle = request.state.shuffleMode != AudioServiceShuffleModeMessage.none;
-    _mpris.loopStatus = _loopStatuses.keys.firstWhere(
+    _player.playbackState = _isPlaying ? 'Playing' : 'Paused';
+    _player.shuffle = request.state.shuffleMode != AudioServiceShuffleModeMessage.none;
+    _player.loopStatus = _loopStatuses.keys.firstWhere(
       (k) => _loopStatuses[k] == request.state.repeatMode,
       orElse: () => 'None',
     );
-    _mpris.rate = request.state.speed;
-    _mprisSeekHandler.setPlaybackState(request.state);
+    _player.rate = request.state.speed;
+    _seekHandler.setPlaybackState(request.state);
   }
 
   String _formatTrackId(String id) => '/Track/${id.replaceAll(RegExp(r'[^A-Za-z0-9_]+'), '_')}';
@@ -223,7 +285,7 @@ class AudioServiceMpris extends AudioServicePlatform {
     await _registerIfNeeded();
     if (_trackId != request.mediaItem.id) {
       _trackId = request.mediaItem.id;
-      _mprisSeekHandler.resetPlaybackState();
+      _seekHandler.resetPlaybackState();
     }
     List<String>? artist;
     if (request.mediaItem.artist != null) artist = [request.mediaItem.artist!];
@@ -231,7 +293,7 @@ class AudioServiceMpris extends AudioServicePlatform {
     List<String>? genre;
     if (request.mediaItem.genre != null) genre = [request.mediaItem.genre!];
 
-    _mpris.metadata = _Metadata(
+    _player.metadata = _Metadata(
       trackId: _formatTrackId(request.mediaItem.id),
       title: request.mediaItem.title,
       length: request.mediaItem.duration,
@@ -244,24 +306,26 @@ class AudioServiceMpris extends AudioServicePlatform {
 
   @override
   Future<void> stopService(StopServiceRequest request) async {
-    _mprisSeekHandler.resetPlaybackState();
+    _seekHandler.resetPlaybackState();
     _trackId = null;
-    _mpris.playbackState = 'Stopped';
-    _mpris.metadata = _Metadata();
+    _player.playbackState = 'Stopped';
+    _player.metadata = _Metadata();
     await _unregisterIfNeeded();
   }
 
   Future<void> _registerIfNeeded() async {
-    if (_isRegistered || _serviceName == null) return;
+    final client = _dBusClient;
+    if (_isRegistered || _serviceName == null || client == null) return;
 
-    await _dBusClient.requestName(_serviceName!, flags: {DBusRequestNameFlag.doNotQueue});
+    await client.requestName(_serviceName!, flags: {DBusRequestNameFlag.doNotQueue});
     _isRegistered = true;
   }
 
   Future<void> _unregisterIfNeeded() async {
-    if (!_isRegistered || _serviceName == null) return;
+    final client = _dBusClient;
+    if (!_isRegistered || _serviceName == null || client == null) return;
 
-    await _dBusClient.releaseName(_serviceName!);
+    await client.releaseName(_serviceName!);
     _isRegistered = false;
   }
 
@@ -277,90 +341,95 @@ class AudioServiceMpris extends AudioServicePlatform {
   };
 
   void _listenToEvents() {
-    _mpris.events.listen((event) {
-      if (_handlerCallbacks == null) return;
+    _subscriptions.add(
+      _player.events.listen((event) {
+        if (_handlerCallbacks == null) return;
 
-      switch (event.type) {
-        case _MprisEventType.controlPlay:
-          _handlerCallbacks!.play(const PlayRequest());
-        case _MprisEventType.controlPause:
-          _handlerCallbacks!.pause(const PauseRequest());
-        case _MprisEventType.controlNext:
-          _handlerCallbacks!.skipToNext(const SkipToNextRequest());
-        case _MprisEventType.controlPrevious:
-          _handlerCallbacks!.skipToPrevious(const SkipToPreviousRequest());
-        case _MprisEventType.controlPlayPause:
-          _isPlaying
-              ? _handlerCallbacks!.pause(const PauseRequest())
-              : _handlerCallbacks!.play(const PlayRequest());
-        case _MprisEventType.controlStop:
-          _handlerCallbacks!.stop(const StopRequest());
-        case _MprisEventType.position:
-          _handlerCallbacks!.seek(SeekRequest(position: event.value as Duration));
-        case _MprisEventType.openUri:
-          _handlerCallbacks!.playFromUri(PlayFromUriRequest(uri: event.value as Uri));
-        case _MprisEventType.seek:
-          final offset = event.value as Duration;
-          Duration newPosition = _mpris.position + offset;
-          Duration? length = _mpris.metadata.length;
+        switch (event.type) {
+          case _MprisEventType.controlPlay:
+            _handlerCallbacks!.play(const PlayRequest());
+          case _MprisEventType.controlPause:
+            _handlerCallbacks!.pause(const PauseRequest());
+          case _MprisEventType.controlNext:
+            _handlerCallbacks!.skipToNext(const SkipToNextRequest());
+          case _MprisEventType.controlPrevious:
+            _handlerCallbacks!.skipToPrevious(const SkipToPreviousRequest());
+          case _MprisEventType.controlPlayPause:
+            _isPlaying
+                ? _handlerCallbacks!.pause(const PauseRequest())
+                : _handlerCallbacks!.play(const PlayRequest());
+          case _MprisEventType.controlStop:
+            _handlerCallbacks!.stop(const StopRequest());
+          case _MprisEventType.position:
+            _handlerCallbacks!.seek(SeekRequest(position: event.value as Duration));
+          case _MprisEventType.openUri:
+            _handlerCallbacks!.playFromUri(PlayFromUriRequest(uri: event.value as Uri));
+          case _MprisEventType.seek:
+            final offset = event.value as Duration;
+            Duration newPosition = _player.position + offset;
+            Duration? length = _player.metadata.length;
 
-          if(length != null && newPosition > length) {
-            newPosition = length;
-          }
-          else if(newPosition.isNegative) {
-            newPosition = Duration.zero;
-          }
+            if (length != null && newPosition > length) {
+              newPosition = length;
+            } else if (newPosition.isNegative) {
+              newPosition = Duration.zero;
+            }
 
-          _handlerCallbacks!.seek(SeekRequest(position: newPosition));
-      }
-    });
+            _handlerCallbacks!.seek(SeekRequest(position: newPosition));
+        }
+      }),
+    );
   }
 
   void _listenToPropertyChanges() {
-    _mpris.propertyEvents.listen((event) {
-      if (_handlerCallbacks == null) return;
+    _subscriptions.add(
+      _player.propertyEvents.listen((event) {
+        if (_handlerCallbacks == null) return;
 
-      switch (event.name) {
-        case 'Shuffle':
-          final value = event.value as bool;
-          final modeMessage =
-              value ? AudioServiceShuffleModeMessage.all : AudioServiceShuffleModeMessage.none;
-          final request = SetShuffleModeRequest(shuffleMode: modeMessage);
-          _handlerCallbacks!.setShuffleMode(request);
-        case 'Rate':
-          final value = event.value as double;
-          final request = SetSpeedRequest(speed: value);
-          _handlerCallbacks!.setSpeed(request);
-        case 'LoopStatus':
-          final value = event.value as String;
-          final repeatMode = _loopStatuses[value] ?? AudioServiceRepeatModeMessage.none;
-          final request = SetRepeatModeRequest(repeatMode: repeatMode);
-          _handlerCallbacks!.setRepeatMode(request);
-        case 'PlaybackStatus':
-          final value = event.value as String;
-          if (value == 'Playing') {
-            _handlerCallbacks!.play(const PlayRequest());
-          } else if (value == 'Paused') {
-            _handlerCallbacks!.pause(const PauseRequest());
-          } else if (value == 'Stopped') {
-            _handlerCallbacks!.stop(const StopRequest());
-          }
-        case 'Volume':
-          final value = event.value as double;
-          final req = CustomActionRequest(name: 'dbusVolume', extras: {'value': value});
-          _handlerCallbacks!.customAction(req);
-      }
-    });
+        switch (event.name) {
+          case 'Shuffle':
+            final value = event.value as bool;
+            final modeMessage =
+                value ? AudioServiceShuffleModeMessage.all : AudioServiceShuffleModeMessage.none;
+            final request = SetShuffleModeRequest(shuffleMode: modeMessage);
+            _handlerCallbacks!.setShuffleMode(request);
+          case 'Rate':
+            final value = event.value as double;
+            final request = SetSpeedRequest(speed: value);
+            _handlerCallbacks!.setSpeed(request);
+          case 'LoopStatus':
+            final value = event.value as String;
+            final repeatMode = _loopStatuses[value] ?? AudioServiceRepeatModeMessage.none;
+            final request = SetRepeatModeRequest(repeatMode: repeatMode);
+            _handlerCallbacks!.setRepeatMode(request);
+          case 'PlaybackStatus':
+            final value = event.value as String;
+            if (value == 'Playing') {
+              _handlerCallbacks!.play(const PlayRequest());
+            } else if (value == 'Paused') {
+              _handlerCallbacks!.pause(const PauseRequest());
+            } else if (value == 'Stopped') {
+              _handlerCallbacks!.stop(const StopRequest());
+            }
+          case 'Volume':
+            final value = event.value as double;
+            final req = CustomActionRequest(name: 'dbusVolume', extras: {'value': value});
+            _handlerCallbacks!.customAction(req);
+        }
+      }),
+    );
   }
 
   void _listenToMethodEvents() {
-    _mpris.methodEvents.listen((method) {
-      switch (method) {
-        case _MprisMethod.quit:
-          if (_defaults.onQuitRequest != null) _defaults.onQuitRequest!.call();
-        case _MprisMethod.raise:
-          if (_defaults.onRaiseRequest != null) _defaults.onRaiseRequest!.call();
-      }
-    });
+    _subscriptions.add(
+      _player.methodEvents.listen((method) {
+        switch (method) {
+          case _MprisMethod.quit:
+            if (_defaults.onQuitRequest != null) _defaults.onQuitRequest!.call();
+          case _MprisMethod.raise:
+            if (_defaults.onRaiseRequest != null) _defaults.onRaiseRequest!.call();
+        }
+      }),
+    );
   }
 }
